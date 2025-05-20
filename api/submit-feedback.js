@@ -1,8 +1,24 @@
 const { TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID } = process.env;
 
+// List of allowed domains
+const allowedOrigins = [
+  'https://outparse.github.io',
+  'https://outparse-app.github.io'
+];
+
 export default async function handler(req, res) {
-  // Set CORS headers (for cross-origin requests)
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // Get the origin from the request headers
+  const origin = req.headers.origin;
+  
+  // Check if the request origin is in the allowed list
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  } else if (origin) {
+    // Origin is present but not allowed - reject the request
+    return res.status(403).json({ error: 'Origin not allowed' });
+  }
+  
+  // Set other CORS headers
   res.setHeader('Access-Control-Allow-Methods', 'POST');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
